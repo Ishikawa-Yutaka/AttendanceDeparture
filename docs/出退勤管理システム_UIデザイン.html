@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出退勤管理システム - UIデザイン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', sans-serif;
+            background: #1a1a2e;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .design-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .design-header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 40px;
+        }
+        
+        .design-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .design-header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        /* タブ切り替え */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: #2d2d44;
+            color: #888;
+        }
+        
+        .tab-button:hover {
+            background: #3d3d5c;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* モバイル画面グリッド */
+        .mobile-screens {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            justify-items: center;
+        }
+        
+        .screen {
+            background: #2d2d44;
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .screen-header {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+        
+        .mobile-frame {
+            width: 100%;
+            aspect-ratio: 9/19.5;
+            background: #f5f5f5;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .mobile-statusbar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .mobile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 15px 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .mobile-content {
+            padding: 20px;
+            padding-bottom: 80px;
+            background: #f5f5f5;
+        }
+        
+        /* 打刻ステータス */
+        .clock-status {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .current-time {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333;
+            letter-spacing: 2px;
+        }
+        
+        .current-date {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .work-status {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 15px 0;
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .work-status.not-working {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .work-time {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .clock-button {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .clock-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .clock-in {
+            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+        }
+        
+        .clock-out {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+        }
+        
+        .location-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
+        }
+        
+        /* サマリーカード */
+        .today-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .summary-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* カレンダー */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .calendar-nav button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: #667eea;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .calendar-grid {
+            background: #fff;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .calendar-day.today {
+            background: #667eea;
+            color: #fff;
+        }
+        
+        .calendar-day.worked {
+            background: #e8f5e9;
+        }
+        
+        .calendar-day.overtime {
+            background: #fff3e0;
+        }
+        
+        .calendar-day .day-status {
+            font-size: 8px;
+            margin-top: 2px;
+        }
+        
+        .month-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .month-summary-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .month-summary-label {
+            font-size: 10px;
+            color: #888;
+        }
+        
+        .month-summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* 申請一覧 */
+        .request-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .request-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .request-info {
+            flex: 1;
+        }
+        
+        .request-type {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .request-date {
+            font-size: 12px;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .request-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-approved {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .status-rejected {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        /* FAB */
+        .fab {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ボトムナビゲーション */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #888;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+        }
+        
+        /* ===== PC管理画面 ===== */
+        .pc-screens {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .pc-screen {
+            background: #2d2d44;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .pc-screen-header {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+        
+        .pc-frame {
+            background: #f5f5f5;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .pc-header {
+            background: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .pc-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .pc-nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .pc-nav-item {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .pc-nav-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .pc-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pc-avatar {
+            width: 36px;
+            height: 36px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        
+        .pc-content {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .pc-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        
+        /* KPIカード */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .kpi-label {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .kpi-value.alert {
+            color: #f44336;
+        }
+        
+        .kpi-value.warning {
+            color: #ff9800;
+        }
+        
+        .kpi-change {
+            font-size: 12px;
+            color: #4caf50;
+            margin-top: 5px;
+        }
+        
+        /* アラートリスト */
+        .alert-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .alert-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff8e1;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .alert-item.critical {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        
+        .alert-icon {
+            font-size: 20px;
+        }
+        
+        .alert-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .alert-action {
+            padding: 6px 12px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* テーブル */
+        .data-table {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .table-search {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .table-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        td {
+            color: #333;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .badge-warning {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .badge-danger {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .badge-info {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        /* 承認画面 */
+        .approval-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .approval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .approval-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .approval-avatar {
+            width: 48px;
+            height: 48px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+        }
+        
+        .approval-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .approval-dept {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .approval-type {
+            padding: 6px 14px;
+            background: #e3f2fd;
+            color: #2196f3;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .approval-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .approval-reason {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .approval-reason-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .approval-reason-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .approval-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn-approve {
+            padding: 10px 30px;
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-reject {
+            padding: 10px 30px;
+            background: #fff;
+            color: #f44336;
+            border: 2px solid #f44336;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pc-nav {
+                display: none;
+            }
+            
+            .approval-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-container">
+        <div class="design-header">
+            <h1>出退勤管理システム</h1>
+            <p>UI/UX デザイン仕様書</p>
+        </div>
+        
+        <!-- タブ切り替え -->
+        <div class="tab-container">
+            <button class="tab-button active" onclick="switchTab('mobile')">📱 モバイルアプリ</button>
+            <button class="tab-button" onclick="switchTab('pc')">💻 PC管理画面</button>
+        </div>
+        
+        <!-- モバイルアプリ画面 -->
+        <div id="mobile" class="tab-content active">
+            <div class="mobile-screens">
+                <!-- 1. 打刻画面（出勤前） -->
+                <div class="screen">
+                    <div class="screen-header">1. 打刻画面（出勤前）</div>
+                    <div class="mobile-frame">
+                        <div class="mobile-statusbar">
+                            <span>9:28</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="mobile-header">
+                            <div class="user-info">
+                                <div class="avatar">👤</div>
+                                <div>
+                                    <div class="user-name">山田 太郎</div>
+                                    <div class="user-role">開発部</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="clock-status">
+                                <div class="current-time">09:28</div>
+                                <div class="current-date">2025年11月17日（月）</div>
+                                <div class="work-status not-working">未出勤</div>
+                                
+                                <button class="clock-button clock-in">
+                                    出勤
+                                </button>
+                                
+                                <div class="location-info">
+                                    📍 東京都渋谷区 (GPS取得中...)
+                                </div>
+                            </div>
+                            
+                            <div class="today-summary">
+                                <div class="summary-item">
+                                    <div class="summary-label">今月労働時間</div>
+                                    <div class="summary-value">85h</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">時間外労働</div>
+                                    <div class="summary-value">12h</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bottom-nav">
+                            <div class="nav-item active">
+                                <span class="nav-icon">🏠</span>
+                                <span>ホーム</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📅</span>
+                                <span>カレンダー</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📝</span>
+                                <span>申請</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">⚙️</span>
+                                <span>設定</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2. 打刻画面（勤務中） -->
+                <div class="screen">
+                    <div class="screen-header">2. 打刻画面（勤務中）</div>
+                    <div class="mobile-frame">
+                        <div class="mobile-statusbar">
+                            <span>17:32</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="mobile-header">
+                            <div class="user-info">
+                                <div class="avatar">👤</div>
+                                <div>
+                                    <div class="user-name">山田 太郎</div>
+                                    <div class="user-role">開発部</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="clock-status">
+                                <div class="current-time">17:32</div>
+                                <div class="current-date">2025年11月17日（月）</div>
+                                <div class="work-status">勤務中</div>
+                                <div class="work-time">8時間02分</div>
+                                
+                                <button class="clock-button clock-out">
+                                    退勤
+                                </button>
+                            </div>
+                            
+                            <div class="today-summary">
+                                <div class="summary-item">
+                                    <div class="summary-label">出勤時刻</div>
+                                    <div class="summary-value">09:30</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">休憩時間</div>
+                                    <div class="summary-value">1h</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">実働時間</div>
+                                    <div class="summary-value">7h02m</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">残業予測</div>
+                                    <div class="summary-value">0h</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bottom-nav">
+                            <div class="nav-item active">
+                                <span class="nav-icon">🏠</span>
+                                <span>ホーム</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📅</span>
+                                <span>カレンダー</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📝</span>
+                                <span>申請</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">⚙️</span>
+                                <span>設定</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3. 月間カレンダー -->
+                <div class="screen">
+                    <div class="screen-header">3. 月間勤怠カレンダー</div>
+                    <div class="mobile-frame">
+                        <div class="mobile-statusbar">
+                            <span>12:00</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="mobile-header">
+                            <div class="user-info">
+                                <div class="avatar">👤</div>
+                                <div>
+                                    <div class="user-name">山田 太郎</div>
+                                    <div class="user-role">開発部</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="calendar-header">
+                                <div class="calendar-title">2025年11月</div>
+                                <div class="calendar-nav">
+                                    <button>‹</button>
+                                    <button>›</button>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-grid">
+                                <div class="calendar-weekdays">
+                                    <span>日</span>
+                                    <span>月</span>
+                                    <span>火</span>
+                                    <span>水</span>
+                                    <span>木</span>
+                                    <span>金</span>
+                                    <span>土</span>
+                                </div>
+                                <div class="calendar-days">
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day"></div>
+                                    <div class="calendar-day worked">1<span class="day-status">8h</span></div>
+                                    <div class="calendar-day">2</div>
+                                    <div class="calendar-day worked">3<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">4<span class="day-status">8h</span></div>
+                                    <div class="calendar-day overtime">5<span class="day-status">10h</span></div>
+                                    <div class="calendar-day worked">6<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">7<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">8<span class="day-status">8h</span></div>
+                                    <div class="calendar-day">9</div>
+                                    <div class="calendar-day worked">10<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">11<span class="day-status">8h</span></div>
+                                    <div class="calendar-day overtime">12<span class="day-status">9h</span></div>
+                                    <div class="calendar-day worked">13<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">14<span class="day-status">8h</span></div>
+                                    <div class="calendar-day worked">15<span class="day-status">8h</span></div>
+                                    <div class="calendar-day">16</div>
+                                    <div class="calendar-day today">17<span class="day-status">-</span></div>
+                                    <div class="calendar-day">18</div>
+                                    <div class="calendar-day">19</div>
+                                    <div class="calendar-day">20</div>
+                                    <div class="calendar-day">21</div>
+                                    <div class="calendar-day">22</div>
+                                    <div class="calendar-day">23</div>
+                                    <div class="calendar-day">24</div>
+                                    <div class="calendar-day">25</div>
+                                    <div class="calendar-day">26</div>
+                                    <div class="calendar-day">27</div>
+                                    <div class="calendar-day">28</div>
+                                    <div class="calendar-day">29</div>
+                                    <div class="calendar-day">30</div>
+                                </div>
+                            </div>
+                            
+                            <div class="month-summary">
+                                <div class="month-summary-item">
+                                    <div class="month-summary-label">勤務日数</div>
+                                    <div class="month-summary-value">11日</div>
+                                </div>
+                                <div class="month-summary-item">
+                                    <div class="month-summary-label">労働時間</div>
+                                    <div class="month-summary-value">91h</div>
+                                </div>
+                                <div class="month-summary-item">
+                                    <div class="month-summary-label">残業時間</div>
+                                    <div class="month-summary-value">3h</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <span class="nav-icon">🏠</span>
+                                <span>ホーム</span>
+                            </div>
+                            <div class="nav-item active">
+                                <span class="nav-icon">📅</span>
+                                <span>カレンダー</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📝</span>
+                                <span>申請</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">⚙️</span>
+                                <span>設定</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 4. 申請一覧 -->
+                <div class="screen">
+                    <div class="screen-header">4. 申請一覧</div>
+                    <div class="mobile-frame">
+                        <div class="mobile-statusbar">
+                            <span>14:20</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="mobile-header">
+                            <div class="user-info">
+                                <div class="avatar">👤</div>
+                                <div>
+                                    <div class="user-name">山田 太郎</div>
+                                    <div class="user-role">開発部</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="request-list">
+                                <div class="request-item">
+                                    <div class="request-info">
+                                        <div class="request-type">🏖️ 有給休暇申請</div>
+                                        <div class="request-date">2025/11/25 - 2025/11/26</div>
+                                    </div>
+                                    <div class="request-status status-pending">承認待ち</div>
+                                </div>
+                                
+                                <div class="request-item">
+                                    <div class="request-info">
+                                        <div class="request-type">✏️ 打刻修正申請</div>
+                                        <div class="request-date">2025/11/15 出勤時刻修正</div>
+                                    </div>
+                                    <div class="request-status status-approved">承認済み</div>
+                                </div>
+                                
+                                <div class="request-item">
+                                    <div class="request-info">
+                                        <div class="request-type">🏠 リモートワーク申請</div>
+                                        <div class="request-date">2025/11/20</div>
+                                    </div>
+                                    <div class="request-status status-approved">承認済み</div>
+                                </div>
+                                
+                                <div class="request-item">
+                                    <div class="request-info">
+                                        <div class="request-type">⏰ 残業申請</div>
+                                        <div class="request-date">2025/11/12 2時間</div>
+                                    </div>
+                                    <div class="request-status status-approved">承認済み</div>
+                                </div>
+                                
+                                <div class="request-item">
+                                    <div class="request-info">
+                                        <div class="request-type">🏖️ 有給休暇申請</div>
+                                        <div class="request-date">2025/10/28</div>
+                                    </div>
+                                    <div class="request-status status-rejected">却下</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="fab">+</button>
+                        
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <span class="nav-icon">🏠</span>
+                                <span>ホーム</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">📅</span>
+                                <span>カレンダー</span>
+                            </div>
+                            <div class="nav-item active">
+                                <span class="nav-icon">📝</span>
+                                <span>申請</span>
+                            </div>
+                            <div class="nav-item">
+                                <span class="nav-icon">⚙️</span>
+                                <span>設定</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PC管理画面 -->
+        <div id="pc" class="tab-content">
+            <div class="pc-screens">
+                <!-- 1. ダッシュボード -->
+                <div class="pc-screen">
+                    <div class="pc-screen-header">1. 管理者ダッシュボード</div>
+                    <div class="pc-frame">
+                        <div class="pc-header">
+                            <div class="pc-logo">勤怠管理システム</div>
+                            <div class="pc-nav">
+                                <a href="#" class="pc-nav-item active">ダッシュボード</a>
+                                <a href="#" class="pc-nav-item">勤怠一覧</a>
+                                <a href="#" class="pc-nav-item">申請承認</a>
+                                <a href="#" class="pc-nav-item">レポート</a>
+                                <a href="#" class="pc-nav-item">設定</a>
+                            </div>
+                            <div class="pc-user">
+                                <div class="pc-avatar">👤</div>
+                                <span>管理者</span>
+                            </div>
+                        </div>
+                        <div class="pc-content">
+                            <h2 class="pc-title">ダッシュボード</h2>
+                            
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">本日の出勤者数</div>
+                                    <div class="kpi-value">42</div>
+                                    <div class="kpi-change">/ 50名</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">未打刻者</div>
+                                    <div class="kpi-value warning">3</div>
+                                    <div class="kpi-change">要確認</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">承認待ち申請</div>
+                                    <div class="kpi-value">8</div>
+                                    <div class="kpi-change">件</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">アラート</div>
+                                    <div class="kpi-value alert">2</div>
+                                    <div class="kpi-change">要対応</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-section">
+                                <div class="alert-title">⚠️ 重要なアラート</div>
+                                <div class="alert-list">
+                                    <div class="alert-item critical">
+                                        <span class="alert-icon">🚨</span>
+                                        <span class="alert-text"><strong>佐藤一郎</strong>さんの月間残業時間が<strong>45時間</strong>を超過しています</span>
+                                        <button class="alert-action">詳細</button>
+                                    </div>
+                                    <div class="alert-item">
+                                        <span class="alert-icon">⏰</span>
+                                        <span class="alert-text"><strong>田中花子</strong>さんが本日未打刻です（10:00経過）</span>
+                                        <button class="alert-action">確認</button>
+                                    </div>
+                                    <div class="alert-item">
+                                        <span class="alert-icon">😴</span>
+                                        <span class="alert-text"><strong>鈴木次郎</strong>さんの勤務間インターバルが11時間未満です</span>
+                                        <button class="alert-action">詳細</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="data-table">
+                                <div class="table-header">
+                                    <div class="table-title">本日の勤怠状況</div>
+                                    <div class="table-actions">
+                                        <input type="text" class="table-search" placeholder="🔍 検索...">
+                                        <button class="table-btn">CSV出力</button>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>社員名</th>
+                                            <th>部署</th>
+                                            <th>出勤時刻</th>
+                                            <th>退勤時刻</th>
+                                            <th>勤務時間</th>
+                                            <th>ステータス</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>山田 太郎</td>
+                                            <td>開発部</td>
+                                            <td>09:30</td>
+                                            <td>-</td>
+                                            <td>7h02m</td>
+                                            <td><span class="badge badge-success">勤務中</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>田中 花子</td>
+                                            <td>営業部</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td><span class="badge badge-warning">未打刻</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>鈴木 次郎</td>
+                                            <td>人事部</td>
+                                            <td>08:45</td>
+                                            <td>17:30</td>
+                                            <td>8h45m</td>
+                                            <td><span class="badge badge-info">退勤済み</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>佐藤 一郎</td>
+                                            <td>開発部</td>
+                                            <td>09:00</td>
+                                            <td>-</td>
+                                            <td>8h32m</td>
+                                            <td><span class="badge badge-danger">残業中</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2. 申請承認画面 -->
+                <div class="pc-screen">
+                    <div class="pc-screen-header">2. 申請承認画面</div>
+                    <div class="pc-frame">
+                        <div class="pc-header">
+                            <div class="pc-logo">勤怠管理システム</div>
+                            <div class="pc-nav">
+                                <a href="#" class="pc-nav-item">ダッシュボード</a>
+                                <a href="#" class="pc-nav-item">勤怠一覧</a>
+                                <a href="#" class="pc-nav-item active">申請承認</a>
+                                <a href="#" class="pc-nav-item">レポート</a>
+                                <a href="#" class="pc-nav-item">設定</a>
+                            </div>
+                            <div class="pc-user">
+                                <div class="pc-avatar">👤</div>
+                                <span>管理者</span>
+                            </div>
+                        </div>
+                        <div class="pc-content">
+                            <h2 class="pc-title">申請承認 <span class="badge badge-warning">8件</span></h2>
+                            
+                            <div class="approval-card">
+                                <div class="approval-header">
+                                    <div class="approval-user">
+                                        <div class="approval-avatar">👤</div>
+                                        <div>
+                                            <div class="approval-name">山田 太郎</div>
+                                            <div class="approval-dept">開発部 / 一般社員</div>
+                                        </div>
+                                    </div>
+                                    <div class="approval-type">🏖️ 有給休暇申請</div>
+                                </div>
+                                
+                                <div class="approval-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">申請日</div>
+                                        <div class="detail-value">2025/11/15</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">取得日</div>
+                                        <div class="detail-value">2025/11/25 - 26</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">残有給日数</div>
+                                        <div class="detail-value">12日</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="approval-reason">
+                                    <div class="approval-reason-label">申請理由</div>
+                                    <div class="approval-reason-text">家族の結婚式に出席するため、2日間のお休みをいただきたくお願い申し上げます。</div>
+                                </div>
+                                
+                                <div class="approval-actions">
+                                    <button class="btn-reject">却下</button>
+                                    <button class="btn-approve">承認</button>
+                                </div>
+                            </div>
+                            
+                            <div class="approval-card">
+                                <div class="approval-header">
+                                    <div class="approval-user">
+                                        <div class="approval-avatar">👤</div>
+                                        <div>
+                                            <div class="approval-name">鈴木 次郎</div>
+                                            <div class="approval-dept">人事部 / 一般社員</div>
+                                        </div>
+                                    </div>
+                                    <div class="approval-type">✏️ 打刻修正申請</div>
+                                </div>
+                                
+                                <div class="approval-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">対象日</div>
+                                        <div class="detail-value">2025/11/14</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">修正内容</div>
+                                        <div class="detail-value">出勤 09:00 → 08:30</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">GPS記録</div>
+                                        <div class="detail-value">📍 08:28 オフィス付近</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="approval-reason">
+                                    <div class="approval-reason-label">申請理由</div>
+                                    <div class="approval-reason-text">打刻を失念しておりました。GPSログにて出勤時刻の確認をお願いいたします。</div>
+                                </div>
+                                
+                                <div class="approval-actions">
+                                    <button class="btn-reject">却下</button>
+                                    <button class="btn-approve">承認</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3. 勤怠一覧・レポート -->
+                <div class="pc-screen">
+                    <div class="pc-screen-header">3. 勤怠一覧・レポート</div>
+                    <div class="pc-frame">
+                        <div class="pc-header">
+                            <div class="pc-logo">勤怠管理システム</div>
+                            <div class="pc-nav">
+                                <a href="#" class="pc-nav-item">ダッシュボード</a>
+                                <a href="#" class="pc-nav-item active">勤怠一覧</a>
+                                <a href="#" class="pc-nav-item">申請承認</a>
+                                <a href="#" class="pc-nav-item">レポート</a>
+                                <a href="#" class="pc-nav-item">設定</a>
+                            </div>
+                            <div class="pc-user">
+                                <div class="pc-avatar">👤</div>
+                                <span>管理者</span>
+                            </div>
+                        </div>
+                        <div class="pc-content">
+                            <h2 class="pc-title">月次勤怠レポート - 2025年11月</h2>
+                            
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">平均労働時間</div>
+                                    <div class="kpi-value">168h</div>
+                                    <div class="kpi-change">前月比 +2h</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">平均残業時間</div>
+                                    <div class="kpi-value">18h</div>
+                                    <div class="kpi-change">前月比 -3h</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">有給取得率</div>
+                                    <div class="kpi-value">65%</div>
+                                    <div class="kpi-change">目標 70%</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">遅刻・早退</div>
+                                    <div class="kpi-value">12</div>
+                                    <div class="kpi-change">件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="data-table">
+                                <div class="table-header">
+                                    <div class="table-title">社員別勤怠サマリー</div>
+                                    <div class="table-actions">
+                                        <select class="table-search">
+                                            <option>全部署</option>
+                                            <option>開発部</option>
+                                            <option>営業部</option>
+                                            <option>人事部</option>
+                                        </select>
+                                        <button class="table-btn">Excel出力</button>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>社員名</th>
+                                            <th>部署</th>
+                                            <th>出勤日数</th>
+                                            <th>労働時間</th>
+                                            <th>残業時間</th>
+                                            <th>有給使用</th>
+                                            <th>遅刻/早退</th>
+                                            <th>ステータス</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>山田 太郎</td>
+                                            <td>開発部</td>
+                                            <td>18日</td>
+                                            <td>160h</td>
+                                            <td>12h</td>
+                                            <td>2h</td>
+                                            <td>0/1</td>
+                                            <td><span class="badge badge-success">正常</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>田中 花子</td>
+                                            <td>営業部</td>
+                                            <td>19日</td>
+                                            <td>165h</td>
+                                            <td>20h</td>
+                                            <td>1h</td>
+                                            <td>1/0</td>
+                                            <td><span class="badge badge-success">正常</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>鈴木 次郎</td>
+                                            <td>人事部</td>
+                                            <td>17日</td>
+                                            <td>155h</td>
+                                            <td>8h</td>
+                                            <td>3h</td>
+                                            <td>0/0</td>
+                                            <td><span class="badge badge-success">正常</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>佐藤 一郎</td>
+                                            <td>開発部</td>
+                                            <td>20日</td>
+                                            <td>172h</td>
+                                            <td style="color: #ff9800; font-weight: bold;">42h</td>
+                                            <td>5h</td>
+                                            <td>0/0</td>
+                                            <td><span class="badge badge-warning">要注意</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>高橋 美咲</td>
+                                            <td>営業部</td>
+                                            <td>15日</td>
+                                            <td>140h</td>
+                                            <td>5h</td>
+                                            <td>8h</td>
+                                            <td>2/1</td>
+                                            <td><span class="badge badge-info">有給消化中</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

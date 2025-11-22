@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 従業員マスタ
+model Employee {
+  id         String  @id @default(uuid())
+  email      String  @unique
+  name       String
+  department String?
+  role       Role    @default(EMPLOYEE)
+
+  // 勤怠関連
+  attendances Attendance[]
+  breaks      Break[]
+  requests    Request[]
+  approvals   Approval[]   @relation("Approver")
+  paidLeaves  PaidLeave[]
+  auditLogs   AuditLog[]
+
+  // 勤務パターン設定
+  workPatternId String?
+  workPattern   WorkPattern? @relation(fields: [workPatternId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([department])
+  @@map("employees")
+}
+
+// 勤務パターン（始業・終業時刻、休憩時間等）
+model WorkPattern {
+  id            String  @id @default(uuid())
+  name          String // パターン名（例: "標準勤務"、"フレックス"）
+  startTime     String // 始業時刻（HH:mm形式）
+  endTime       String // 終業時刻（HH:mm形式）
+  breakDuration Int     @default(60) // 休憩時間（分）
+  workHours     Int     @default(480) // 所定労働時間（分、8時間=480分）
+  isFlexible    Boolean @default(false) // フレックスタイム制か
+
+  employees Employee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("work_patterns")
+}
+
+// 勤怠記録
+model Attendance {
+  id         String    @id @default(uuid())
+  employeeId String
+  date       DateTime  @db.Date // 勤務日
+  clockIn    DateTime? // 出勤時刻
+  clockOut   DateTime? // 退勤時刻
+
+  // GPS位置情報
+  clockInLatitude   Float?
+  clockInLongitude  Float?
+  clockOutLatitude  Float?
+  clockOutLongitude Float?
+
+  // 労働時間（分単位）
+  actualWorkHours  Int? // 実労働時間
+  overtimeHours    Int? @default(0) // 時間外労働時間
+  nightWorkHours   Int? @default(0) // 深夜労働時間（22:00-5:00）
+  holidayWorkHours Int? @default(0) // 休日労働時間
+
+  // 週の労働時間管理用
+  weekNumber Int? // 週番号（ISO週）
+  year       Int // 年
+
+  // 修正履歴
+  isCorrected      Boolean @default(false)
+  correctionReason String?
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  breaks   Break[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([employeeId, date])
+  @@index([date])
+  @@index([employeeId, year, weekNumber])
+  @@map("attendances")
+}
+
+// 休憩記録
+model Break {
+  id           String    @id @default(uuid())
+  attendanceId String
+  startTime    DateTime // 休憩開始時刻
+  endTime      DateTime? // 休憩終了時刻
+  duration     Int? // 休憩時間（分）
+
+  attendance Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?
+
+  @@index([attendanceId])
+  @@map("breaks")
+}
+
+// 申請データ
+model Request {
+  id         String        @id @default(uuid())
+  employeeId String
+  type       RequestType
+  status     RequestStatus @default(PENDING)
+
+  // 申請内容
+  date      DateTime? @db.Date // 申請対象日（休暇申請の場合）
+  startDate DateTime? @db.Date // 開始日（期間指定の場合）
+  endDate   DateTime? @db.Date // 終了日（期間指定の場合）
+  reason    String // 申請理由
+
+  // 打刻修正申請の場合
+  attendanceId      String?
+  correctedClockIn  DateTime?
+  correctedClockOut DateTime?
+
+  employee  Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  approvals Approval[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([type])
+  @@map("requests")
+}
+
+// 承認履歴
+model Approval {
+  id         String         @id @default(uuid())
+  requestId  String
+  approverId String
+  status     ApprovalStatus
+  comment    String?
+
+  request  Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver Employee @relation("Approver", fields: [approverId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([requestId])
+  @@index([approverId])
+  @@map("approvals")
+}
+
+// 年次有給休暇
+model PaidLeave {
+  id            String @id @default(uuid())
+  employeeId    String
+  year          Int
+  grantedDays   Int    @default(0) // 付与日数
+  usedDays      Int    @default(0) // 使用日数
+  remainingDays Int // 残日数（grantedDays - usedDays）
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, year])
+  @@index([employeeId, year])
+  @@map("paid_leaves")
+}
+
+// 操作ログ（改ざん防止・監査用）
+model AuditLog {
+  id         String  @id @default(uuid())
+  employeeId String? // 操作を行った従業員ID
+  action     String // 操作内容（例: "ATTENDANCE_CREATE", "ATTENDANCE_UPDATE", "REQUEST_APPROVE"）
+  tableName  String // 対象テーブル名
+  recordId   String // 対象レコードID
+  oldValue   Json? // 変更前の値
+  newValue   Json? // 変更後の値
+  ipAddress  String?
+  userAgent  String?
+
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([employeeId])
+  @@index([tableName, recordId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// 法定休日設定
+model Holiday {
+  id         String   @id @default(uuid())
+  date       DateTime @unique @db.Date
+  name       String // 休日名（例: "元日"、"建国記念の日"）
+  isNational Boolean  @default(true) // 国民の祝日か
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@map("holidays")
+}
+
+// 36協定管理（フェーズ2で使用）
+model LaborAgreement {
+  id         String @id @default(uuid())
+  employeeId String
+  year       Int
+  month      Int?
+
+  // 上限時間（分）
+  monthlyLimit Int? // 月45時間上限
+  yearlyLimit  Int  @default(21600) // 年360時間上限（分）
+  specialLimit Int? // 特別条項での上限（年720時間）
+
+  // 進捗
+  monthlyOvertime Int @default(0) // 当月の時間外労働時間（分）
+  yearlyOvertime  Int @default(0) // 当年の時間外労働時間（分）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, year, month])
+  @@index([employeeId, year])
+  @@map("labor_agreements")
+}
+
+// 列挙型
+enum Role {
+  EMPLOYEE // 従業員
+  MANAGER // 管理者
+  ADMIN // システム管理者
+}
+
+enum RequestType {
+  ATTENDANCE_CORRECTION // 打刻修正申請
+  PAID_LEAVE // 有給休暇申請
+  OTHER_LEAVE // その他休暇申請
+}
+
+enum RequestStatus {
+  PENDING // 承認待ち
+  APPROVED // 承認済み
+  REJECTED // 却下
+}
+
+enum ApprovalStatus {
+  APPROVED // 承認
+  REJECTED // 却下
+}
